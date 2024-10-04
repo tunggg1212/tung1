@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><link rel="stylesheet" href="vd.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Game</title>
+  <style>
+    #game {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      grid-gap: 10px;
+      margin: 50px auto;
+      width: 540px;
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+      cursor: pointer;
+      color: transparent;
+    }
+    .card.flipped {
+      background-color: #fff;
+      color: #000;
+    }
+    h1 {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Memory Game</h1>
+  <div id="game"></div>
+
+  <script>
+    const symbols = [
+      'An', 'An', 'Ân', 'Ân', 'Cầm', 'Cầm', 'Đạt', 'Đạt', 'Huy', 'Huy', 'Hân', 'Hân', 'Linh', 'Linh', 'Mai', 'Mai', 
+      'Nghi', 'Nghi', 'Anh', 'Anh', 'Huỳnh', 'Huỳnh', 'Khiêm', 'Khiêm', 'Như', 'Như', 'Thanh', 'Thanh', 'Thùy', 'Thùy'
+    ];
+    let shuffledSymbols = symbols.sort(() => 0.5 - Math.random());
+    let firstCard = null;
+    let secondCard = null;
+    let lockBoard = false;
+    let matches = 0;
+
+    function createBoard() {
+      const gameBoard = document.getElementById('game');
+      shuffledSymbols.forEach(symbol => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.textContent = symbol;
+        card.addEventListener('click', flipCard);
+        gameBoard.appendChild(card);
+      });
+    }
+
+    function flipCard() {
+      if (lockBoard || this === firstCard) return;
+      this.classList.add('flipped');
+
+      if (!firstCard) {
+        firstCard = this;
+      } else {
+        secondCard = this;
+        lockBoard = true;
+        checkMatch();
+      }
+    }
+
+    function checkMatch() {
+      if (firstCard.textContent === secondCard.textContent) {
+        disableCards();
+        matches += 1;
+        if (matches === shuffledSymbols.length / 2) {
+          setTimeout(() => alert("Congratulations! You've matched all pairs!"), 500);
+        }
+      } else {
+        unflipCards();
+      }
+    }
+
+    function disableCards() {
+      firstCard.removeEventListener('click', flipCard);
+      secondCard.removeEventListener('click', flipCard);
+      resetBoard();
+    }
+
+    function unflipCards() {
+      setTimeout(() => {
+        firstCard.classList.remove('flipped');
+        secondCard.classList.remove('flipped');
+        resetBoard();
+      }, 1000);
+    }
+
+    function resetBoard() {
+      [firstCard, secondCard, lockBoard] = [null, null, false];
+    }
+
+    createBoard();
+  </script>
+
+</body>
+</html>
